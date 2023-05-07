@@ -153,9 +153,9 @@ def eval(dataloader,modelname,lossfun, currentepoch):
             image = image.to(device)
             label = label.to(device)
             outputs = model(image)
-            _, preds = torch.max(outputs, 1) # 获得当前 batch 所有图像的预测类别
+            _, preds = torch.max(outputs, 1)
             preds = preds.cpu().numpy()
-            loss = lossfun(outputs, label) # 由 logit，计算当前 batch 中，每个样本的平均交叉熵损失函数值
+            loss = lossfun(outputs, label)
             loss = loss.detach().cpu().numpy()
             outputs = outputs.detach().cpu().numpy()
             label = label.detach().cpu().numpy()
