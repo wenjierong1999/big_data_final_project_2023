@@ -37,15 +37,16 @@ batch_size = 16
 
 #Set the percent of training set within dataset, we set 80% of data as training set
 train_percent = 0.8
-val_percent = 1 -train_percent
+val_percent = 0.1
+test_percent = 1-train_percent-val_percent
 random_seed = 912240
 
 #Choose what model are used in this experiment
-model = models.resnet50(pretrained=True).to(device)
+model = models.resnet18(pretrained=True).to(device)
 #Modify the last layer of model to match the size of output
 classifier = nn.Sequential(
     nn.Dropout(0.2),
-    nn.Linear(in_features=model.fc.in_features,out_features=4)
+    nn.Linear(in_features=model.fc.in_features,out_features=2)
 )
 
 model.fc = classifier.cuda()
@@ -144,6 +145,7 @@ def train_one_batch(images, labels, modelname, optimizer, lossfun, currentepoch,
     log_train_perbatch['train_accuracy'] = accuracy_score(labels,preds)
     return log_train_perbatch
 
+
 def eval(dataloader,modelname,lossfun, currentepoch):
     loss_list = []
     labels_list = []
@@ -160,9 +162,9 @@ def eval(dataloader,modelname,lossfun, currentepoch):
             loss = loss.detach().cpu().numpy()
             outputs = outputs.detach().cpu().numpy()
             label = label.detach().cpu().numpy()
-        loss_list.append(loss)
-        labels_list.extend(label)
-        preds_list.extend(preds)
+            loss_list.append(loss)
+            labels_list.extend(label)
+            preds_list.extend(preds)
     print(preds_list)
     print(label)
     log_test = {}
@@ -181,15 +183,16 @@ if __name__ == '__main__':
     #img_dir = '/tmp/pycharm_project_444/assignment2/images_toy'
     #full image pool path
     img_dir = '/root/autodl-tmp/images'
-    label_path = '/tmp/pycharm_project_444/assignment2/toy_label.csv'
-    full_label_path = '/tmp/pycharm_project_444/assignment2/images_cuisines_price.csv'
+    #label_path = '/tmp/pycharm_project_444/assignment2/toy_label.csv'
+    full_label_path = '/tmp/pycharm_project_444/assignment2/label_data/images_cuisines_price.csv'
+    isfood_label_path = '/tmp/pycharm_project_444/assignment2/label_data/isfood_label.csv'
 
     print(model)
 
     #img_label = pd.read_csv(label_path)
     #print(img_label)
-    img_label = gettraindata(10000,full_label_path,'expensiveness_category').reset_index(drop=True)
-    print(img_label['expensiveness_category'].value_counts())
+    img_label = gettraindata(998,isfood_label_path,'isfood').reset_index(drop=True)
+    print(img_label['isfood'].value_counts())
     train_label, val_label = train_test_split(img_label,train_size=train_percent,random_state=random_seed)
 
     train_dataset = Mydata(train_label,img_dir,train_flag=True)
@@ -202,7 +205,7 @@ if __name__ == '__main__':
     val_log_df = pd.DataFrame()
     best_val_accuracy = 0
 
-    checkpoint_path = '/tmp/pycharm_project_444/assignment2/model_checkpoint_q2/'
+    checkpoint_path = '/tmp/pycharm_project_444/assignment2/model_checkpoint_q2/a2/'
     training_logpath = '/tmp/pycharm_project_444/assignment2/training_log_q2/'
 
     if len(os.listdir(checkpoint_path)) != 0:
@@ -229,11 +232,14 @@ if __name__ == '__main__':
             batch_idx = batch_idx + 1
             cum_batch_idx = cum_batch_idx +1
             #print(log_train['train_loss'])
-            wandb.log({"Loss curve":log_train['train_loss']},step=cum_batch_idx)
+            wandb.log({"Training Loss curve":log_train['train_loss']},step=cum_batch_idx)
+            wandb.log({"Training Accuracy":log_train['train_accuracy']},step=cum_batch_idx)
 
         lr_scheduler.step()
         model.eval()
         log_val = eval(val_loader,model,loss_fn,epoch)
+        wandb.log({"Validation Accuracy":log_val['test_accuracy']},step=epoch)
+        wandb.log({"Validation Loss":log_val['test_loss']},step=epoch)
         print("val accuracy",log_val['test_accuracy'])
         val_log_df = pd.concat([val_log_df,pd.DataFrame(log_val,index=[0])],axis=0)
 
