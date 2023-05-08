@@ -1,3 +1,4 @@
+import math
 import torch
 from torchvision import transforms, models
 from torch.utils.data import DataLoader, Dataset, random_split
@@ -103,15 +104,15 @@ class Mydata(Dataset):
 
 def gettraindata(size,filepath,labelname):
     full_label = pd.read_csv(filepath,encoding="ISO-8859-1")
-    ratio = size/full_label.shape[0]
     label_df = full_label[["image_id",labelname]].drop_duplicates(subset=['image_id'],keep="first") #delete the duplicates
     label_df = label_df.dropna() #delete missing value
+    cate_num = len(set(label_df[labelname].tolist()))
+    samplesize_pergroup = math.floor(size/cate_num)
     group_sizes = label_df.groupby(labelname).size()
-    sample_sizes = np.ceil(group_sizes*ratio).astype(int)
     samples = []
-    for label, g_size in sample_sizes.items():
-        group_data = full_label[full_label[labelname]==label]
-        sample = group_data.sample(g_size,random_state=912240)
+    for label_cate in group_sizes.index:
+        groupdata = label_df[label_df[labelname]==label_cate]
+        sample = groupdata.sample(min(group_sizes[label_cate],samplesize_pergroup),random_state=912240)
         samples.append(sample)
     sampled_label_df = pd.concat(samples,axis=0)
     le = LabelEncoder()
@@ -188,9 +189,6 @@ if __name__ == '__main__':
     #img_label = pd.read_csv(label_path)
     #print(img_label)
     img_label = gettraindata(10000,full_label_path,'expensiveness_category').reset_index(drop=True)
-    print(img_label)
-    #print(img_label[['expensiveness_category','idx']].value_counts())
-    #print(img_label['cate_encode'].tolist())
     print(img_label['expensiveness_category'].value_counts())
     train_label, val_label = train_test_split(img_label,train_size=train_percent,random_state=random_seed)
 
@@ -255,7 +253,6 @@ if __name__ == '__main__':
     train_log_df.to_csv(training_logpath+'train_log.csv',index=False)
 
     wandb.finish()
-
 
 
 
