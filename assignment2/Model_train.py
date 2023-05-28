@@ -49,14 +49,13 @@ classifier = nn.Sequential(
     nn.Dropout(0.2),
     nn.Linear(in_features=model.fc.in_features,out_features=2)
 )
-
 model.fc = classifier.cuda()
 
 #Set the loss function
 loss_fn = nn.CrossEntropyLoss().cuda()
 
 #Set the optimizer
-optimizer = optim.SGD(model.fc.parameters(), lr=0.0001)
+optimizer = optim.Adam(model.fc.parameters(), lr=0.0001)
 
 #Use cuda to accelerate the training process if available
 

@@ -1,0 +1,87 @@
+{
+  "name": "blocked",
+  "queries": [
+    {
+      "query": "match (s:streamer) -[ta:tagged] -> (t:tag)\r\nwhere s.description is null\r\nreturn t.name as tagname, t.description as tagdescription, count(s) as numofblockedstreamer\r\norder by numofblockedstreamer desc\r\nlimit 100;",
+      "name": "tag_blockedstreamer",
+      "style": {
+        "code": "\n@NodeStyle {\n  size: 6\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n  border-width: 0.6\n  border-color: #1d1d1d\n  font-size: 3\n}\n\n@NodeStyle Greater(Size(Labels(node)), 0) {\n  label: Format(\":{}\", Join(Labels(node), \" :\"))\n}\n\n@NodeStyle HasProperty(node, \"name\") {\n  label: AsText(Property(node, \"name\"))\n}\n\nDefine(LATITUDE_FIELD, \"lat\")\nDefine(LONGITUDE_FIELD, \"lng\")\n\n@NodeStyle And(IsNumber(Property(node, LATITUDE_FIELD)), IsNumber(Property(node, LONGITUDE_FIELD))) {\n  latitude: Property(node, LATITUDE_FIELD)\n  longitude: Property(node, LONGITUDE_FIELD)\n}\n\n\n@EdgeStyle {\n  color: #999999\n  color-hover: #1d1d1d\n  color-selected: #1d1d1d\n  width: 0.3\n  width-hover: 0.9\n  width-selected: 0.9\n  font-size: 3\n}\n\n@EdgeStyle Less(EdgeCount(graph), 30) {\n  label: Type(edge)\n}\n\n@ViewStyle.Map {\n  tile-layer: \"light\"\n}\n",
+        "isDirty": false
+      },
+      "id": "f30ebe27-9de7-49d7-9db2-2958901b9b2b",
+      "order": 0
+    },
+    {
+      "query": "match (s:streamer) -[p:plays] -> (g:game)\r\nwhere s.description is null\r\nreturn g.name as gamename, count(s) as numofblockedstreamer\r\norder by numofblockedstreamer desc\r\nlimit 100;",
+      "name": "blockedstreamer_games",
+      "style": {
+        "code": "\n@NodeStyle {\n  size: 6\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n  border-width: 0.6\n  border-color: #1d1d1d\n  font-size: 3\n}\n\n@NodeStyle Greater(Size(Labels(node)), 0) {\n  label: Format(\":{}\", Join(Labels(node), \" :\"))\n}\n\n@NodeStyle HasProperty(node, \"name\") {\n  label: AsText(Property(node, \"name\"))\n}\n\nDefine(LATITUDE_FIELD, \"lat\")\nDefine(LONGITUDE_FIELD, \"lng\")\n\n@NodeStyle And(IsNumber(Property(node, LATITUDE_FIELD)), IsNumber(Property(node, LONGITUDE_FIELD))) {\n  latitude: Property(node, LATITUDE_FIELD)\n  longitude: Property(node, LONGITUDE_FIELD)\n}\n\n\n@EdgeStyle {\n  color: #999999\n  color-hover: #1d1d1d\n  color-selected: #1d1d1d\n  width: 0.3\n  width-hover: 0.9\n  width-selected: 0.9\n  font-size: 3\n}\n\n@EdgeStyle Less(EdgeCount(graph), 30) {\n  label: Type(edge)\n}\n\n@ViewStyle.Map {\n  tile-layer: \"light\"\n}\n",
+        "isDirty": false
+      },
+      "id": "6bb71698-10fe-4637-9999-1016db177ad1",
+      "order": 1
+    },
+    {
+      "query": "match (s:streamer) -[m:member]-> (sq:squad)\r\nwhere s.description is NULL\r\nreturn sq.name as sqname, count(s) as blockedstreamernum\r\norder by blockedstreamernum desc\r\nlimit 100;",
+      "name": "blockedstreamer_tag",
+      "style": {
+        "code": "\n@NodeStyle {\n  size: 6\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n  border-width: 0.6\n  border-color: #1d1d1d\n  font-size: 3\n}\n\n@NodeStyle HasLabel(node, \"squad\") {\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n}\n\n@NodeStyle Greater(Size(Labels(node)), 0) {\n  label: Format(\":{}\", Join(Labels(node), \" :\"))\n}\n\n@NodeStyle HasProperty(node, \"name\") {\n  label: AsText(Property(node, \"name\"))\n}\n\nDefine(LATITUDE_FIELD, \"lat\")\nDefine(LONGITUDE_FIELD, \"lng\")\n\n@NodeStyle And(IsNumber(Property(node, LATITUDE_FIELD)), IsNumber(Property(node, LONGITUDE_FIELD))) {\n  latitude: Property(node, LATITUDE_FIELD)\n  longitude: Property(node, LONGITUDE_FIELD)\n}\n\n\n@EdgeStyle {\n  color: #999999\n  color-hover: #1d1d1d\n  color-selected: #1d1d1d\n  width: 0.3\n  width-hover: 0.9\n  width-selected: 0.9\n  font-size: 3\n}\n\n@EdgeStyle Less(EdgeCount(graph), 30) {\n  label: Type(edge)\n}\n\n@ViewStyle.Map {\n  tile-layer: \"light\"\n}\n",
+        "isDirty": false
+      },
+      "id": "69dc272e-ed03-4dd6-9cef-3f3ba9e13821",
+      "order": 2
+    },
+    {
+      "query": "match (s:streamer)-[t:tagged]->(ta:tag)\r\nwhere s.description is null\r\nmatch (s)-[p:plays]->(g:game)\r\nreturn *",
+      "name": "blockedstreamer_alltaggame",
+      "style": {
+        "code": "\n@NodeStyle {\n  size: 6\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n  border-width: 0.6\n  border-color: #1d1d1d\n  font-size: 3\n}\n\n@NodeStyle HasLabel(node, \"tag\") {\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n}\n\n@NodeStyle HasLabel(node, \"streamer\") {\n  color: #FB6E00\n  color-hover: Lighter(#FB6E00)\n  color-selected: Lighter(#FB6E00)\n}\n\n@NodeStyle Greater(Size(Labels(node)), 0) {\n  label: Format(\":{}\", Join(Labels(node), \" :\"))\n}\n\n@NodeStyle HasProperty(node, \"name\") {\n  label: AsText(Property(node, \"name\"))\n}\n\nDefine(LATITUDE_FIELD, \"lat\")\nDefine(LONGITUDE_FIELD, \"lng\")\n\n@NodeStyle And(IsNumber(Property(node, LATITUDE_FIELD)), IsNumber(Property(node, LONGITUDE_FIELD))) {\n  latitude: Property(node, LATITUDE_FIELD)\n  longitude: Property(node, LONGITUDE_FIELD)\n}\n\n\n@EdgeStyle {\n  color: #999999\n  color-hover: #1d1d1d\n  color-selected: #1d1d1d\n  width: 0.3\n  width-hover: 0.9\n  width-selected: 0.9\n  font-size: 3\n}\n\n@EdgeStyle Less(EdgeCount(graph), 30) {\n  label: Type(edge)\n}\n\n@ViewStyle.Map {\n  tile-layer: \"light\"\n}\n",
+        "isDirty": false
+      },
+      "id": "83c9e9d4-de7e-4cea-8572-9e3d72c9de1c",
+      "order": 3
+    },
+    {
+      "query": "match (s:streamer)-[m:member]->(sq:squad) \r\nwhere s.description is null \r\nmatch (s) -[t:tagged]->(ta:tag)\r\nreturn * \r\nlimit 1000\r\n\r\n",
+      "name": "blockedstreamer_squadtag",
+      "style": {
+        "code": "\n@NodeStyle {\n  size: 6\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n  border-width: 0.6\n  border-color: #1d1d1d\n  font-size: 3\n}\n\n@NodeStyle Greater(Size(Labels(node)), 0) {\n  label: Format(\":{}\", Join(Labels(node), \" :\"))\n}\n\n@NodeStyle HasProperty(node, \"name\") {\n  label: AsText(Property(node, \"name\"))\n}\n\nDefine(LATITUDE_FIELD, \"lat\")\nDefine(LONGITUDE_FIELD, \"lng\")\n\n@NodeStyle And(IsNumber(Property(node, LATITUDE_FIELD)), IsNumber(Property(node, LONGITUDE_FIELD))) {\n  latitude: Property(node, LATITUDE_FIELD)\n  longitude: Property(node, LONGITUDE_FIELD)\n}\n\n\n@EdgeStyle {\n  color: #999999\n  color-hover: #1d1d1d\n  color-selected: #1d1d1d\n  width: 0.3\n  width-hover: 0.9\n  width-selected: 0.9\n  font-size: 3\n}\n\n@EdgeStyle Less(EdgeCount(graph), 30) {\n  label: Type(edge)\n}\n\n@ViewStyle.Map {\n  tile-layer: \"light\"\n}\n",
+        "isDirty": false
+      },
+      "id": "0376bb68-1fa0-4201-b196-a8c359972c63",
+      "order": 4
+    },
+    {
+      "query": "match (s:streamer) -[ta:tagged] -> (t:tag)\r\nwith t, count(s) as numofstreamer\r\noptional match (bs:streamer)-[:tagged] -> (t)\r\nwhere bs.description is null\r\nwith t, numofstreamer, count(bs) as numofblockedstreamer\r\nreturn t.name as tagname, \r\n       t.description as tagdescription,\r\n       numofstreamer,\r\n       numofblockedstreamer,\r\n       toFloat(numofblockedstreamer)/toFloat(numofstreamer) as percentage\r\norder by numofblockedstreamer desc\r\nlimit 100;\r\n",
+      "name": "summartstats_blockedstreamer_tag",
+      "style": {
+        "code": "\n@NodeStyle {\n  size: 6\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n  border-width: 0.6\n  border-color: #1d1d1d\n  font-size: 3\n}\n\n@NodeStyle Greater(Size(Labels(node)), 0) {\n  label: Format(\":{}\", Join(Labels(node), \" :\"))\n}\n\n@NodeStyle HasProperty(node, \"name\") {\n  label: AsText(Property(node, \"name\"))\n}\n\nDefine(LATITUDE_FIELD, \"lat\")\nDefine(LONGITUDE_FIELD, \"lng\")\n\n@NodeStyle And(IsNumber(Property(node, LATITUDE_FIELD)), IsNumber(Property(node, LONGITUDE_FIELD))) {\n  latitude: Property(node, LATITUDE_FIELD)\n  longitude: Property(node, LONGITUDE_FIELD)\n}\n\n\n@EdgeStyle {\n  color: #999999\n  color-hover: #1d1d1d\n  color-selected: #1d1d1d\n  width: 0.3\n  width-hover: 0.9\n  width-selected: 0.9\n  font-size: 3\n}\n\n@EdgeStyle Less(EdgeCount(graph), 30) {\n  label: Type(edge)\n}\n\n@ViewStyle.Map {\n  tile-layer: \"light\"\n}\n",
+        "isDirty": false
+      },
+      "id": "6e282e07-a6ab-40a7-9a3b-bb20d4f93b2a",
+      "order": 5
+    },
+    {
+      "query": "match (s:streamer) -[ta:tagged] -> (t:tag)\r\nwith t, count(s) as numofstreamer\r\noptional match (bs:streamer)-[:tagged] -> (t)\r\nwhere bs.description is null\r\nwith t, numofstreamer, \r\n     count(bs) as numofblockedstreamer\r\nwith t, numofstreamer,\r\n     numofblockedstreamer,\r\n     toFloat(numofblockedstreamer)/toFloat(numofstreamer) as percentage\r\nwhere percentage < 1 and percentage > 0.25\r\nreturn t.name as tagname, \r\n       t.description as tagdescription,\r\n       numofstreamer,\r\n       numofblockedstreamer,\r\n       percentage\r\norder by percentage desc\r\nlimit 50;\r\n",
+      "name": "sumstats_blockedstreamner_tag_perdesc",
+      "style": {
+        "code": "\n@NodeStyle {\n  size: 6\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n  border-width: 0.6\n  border-color: #1d1d1d\n  font-size: 3\n}\n\n@NodeStyle Greater(Size(Labels(node)), 0) {\n  label: Format(\":{}\", Join(Labels(node), \" :\"))\n}\n\n@NodeStyle HasProperty(node, \"name\") {\n  label: AsText(Property(node, \"name\"))\n}\n\nDefine(LATITUDE_FIELD, \"lat\")\nDefine(LONGITUDE_FIELD, \"lng\")\n\n@NodeStyle And(IsNumber(Property(node, LATITUDE_FIELD)), IsNumber(Property(node, LONGITUDE_FIELD))) {\n  latitude: Property(node, LATITUDE_FIELD)\n  longitude: Property(node, LONGITUDE_FIELD)\n}\n\n\n@EdgeStyle {\n  color: #999999\n  color-hover: #1d1d1d\n  color-selected: #1d1d1d\n  width: 0.3\n  width-hover: 0.9\n  width-selected: 0.9\n  font-size: 3\n}\n\n@EdgeStyle Less(EdgeCount(graph), 30) {\n  label: Type(edge)\n}\n\n@ViewStyle.Map {\n  tile-layer: \"light\"\n}\n",
+        "isDirty": false
+      },
+      "id": "3578c19a-906f-4d05-b821-7f844501ef85",
+      "order": 6
+    },
+    {
+      "query": "match (s:streamer) -[p:plays] -> (g:game)\r\nwith g, count(s) as numofstreamer\r\noptional match (bs:streamer)-[:plays] -> (g)\r\nwhere bs.description is null\r\nwith g, numofstreamer, \r\n     count(bs) as numofblockedstreamer\r\nwith g, numofstreamer,\r\n     numofblockedstreamer,\r\n     toFloat(numofblockedstreamer)/toFloat(numofstreamer) as percentage\r\n//where percentage < 1 and percentage > 0.25\r\nreturn g.id as gamename, \r\n       numofstreamer,\r\n       numofblockedstreamer,\r\n       percentage\r\norder by numofblockedstreamer desc\r\nlimit 50;\r\n",
+      "name": "blockedstreamer_game_sumstat",
+      "style": {
+        "code": "\n@NodeStyle {\n  size: 6\n  color: #DD2222\n  color-hover: Lighter(#DD2222)\n  color-selected: Lighter(#DD2222)\n  border-width: 0.6\n  border-color: #1d1d1d\n  font-size: 3\n}\n\n@NodeStyle Greater(Size(Labels(node)), 0) {\n  label: Format(\":{}\", Join(Labels(node), \" :\"))\n}\n\n@NodeStyle HasProperty(node, \"name\") {\n  label: AsText(Property(node, \"name\"))\n}\n\nDefine(LATITUDE_FIELD, \"lat\")\nDefine(LONGITUDE_FIELD, \"lng\")\n\n@NodeStyle And(IsNumber(Property(node, LATITUDE_FIELD)), IsNumber(Property(node, LONGITUDE_FIELD))) {\n  latitude: Property(node, LATITUDE_FIELD)\n  longitude: Property(node, LONGITUDE_FIELD)\n}\n\n\n@EdgeStyle {\n  color: #999999\n  color-hover: #1d1d1d\n  color-selected: #1d1d1d\n  width: 0.3\n  width-hover: 0.9\n  width-selected: 0.9\n  font-size: 3\n}\n\n@EdgeStyle Less(EdgeCount(graph), 30) {\n  label: Type(edge)\n}\n\n@ViewStyle.Map {\n  tile-layer: \"light\"\n}\n",
+        "isDirty": false
+      },
+      "id": "cb60e7f7-944f-44c8-8921-f3d4bd47000d",
+      "order": 7
+    }
+  ],
+  "order": 0,
+  "id": 0
+}
